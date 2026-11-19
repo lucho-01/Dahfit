@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="720" viewBox="0 0 1180 720">
+  <defs><marker id="a2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <path d="M 0 0 L 10 5 L 0 10 z" fill="#94A3B8"/></marker></defs>
+  <rect width="100%" height="100%" fill="#FFFFFF"/>
+  <text x="590" y="56" font-family="Georgia, serif" font-size="29" font-weight="700" fill="#1F3864" text-anchor="middle">Contexto del sistema</text>
+  <text x="590" y="88" font-family="Segoe UI, Arial" font-size="16" fill="#6B7280" text-anchor="middle">Quién usa DAFIT, de qué depende y qué queda fuera del hexágono</text>
+  
+    <rect x="470" y="210" width="250" height="150" rx="16" fill="#E6F2EF" stroke="#2E7D6E" stroke-width="2"/>
+    <text x="595" y="244" font-family="Segoe UI, Arial" font-size="19" font-weight="700" fill="#1F3864" text-anchor="middle">DAFIT API</text>
+    <text x="595" y="268" font-family="Segoe UI, Arial" font-size="14" fill="#6B7280" text-anchor="middle">Spring Boot · REST · JWT</text>
+  <text x="595" y="300" font-family="Segoe UI, Arial" font-size="14" fill="#6B7280" text-anchor="middle">dominio + casos de uso</text>
+  
+    <rect x="90" y="210" width="240" height="130" rx="16" fill="#F5F7FA" stroke="#D6DCE5" stroke-width="2"/>
+    <text x="210" y="244" font-family="Segoe UI, Arial" font-size="19" font-weight="700" fill="#1F3864" text-anchor="middle">App móvil</text>
+    <text x="210" y="268" font-family="Segoe UI, Arial" font-size="14" fill="#6B7280" text-anchor="middle">offline-first (futuro)</text>
+  
+    <rect x="90" y="410" width="240" height="130" rx="16" fill="#F5F7FA" stroke="#D6DCE5" stroke-width="2"/>
+    <text x="210" y="444" font-family="Segoe UI, Arial" font-size="19" font-weight="700" fill="#1F3864" text-anchor="middle">Panel web</text>
+    <text x="210" y="468" font-family="Segoe UI, Arial" font-size="14" fill="#6B7280" text-anchor="middle">coach / admin (futuro)</text>
+  
+    <rect x="850" y="210" width="240" height="130" rx="16" fill="#F5F7FA" stroke="#D6DCE5" stroke-width="2"/>
+    <text x="970" y="244" font-family="Segoe UI, Arial" font-size="19" font-weight="700" fill="#1F3864" text-anchor="middle">PostgreSQL</text>
+    <text x="970" y="268" font-family="Segoe UI, Arial" font-size="14" fill="#6B7280" text-anchor="middle">Neon · Flyway</text>
+  
+    <rect x="850" y="410" width="240" height="130" rx="16" fill="#F5F7FA" stroke="#D6DCE5" stroke-width="2"/>
+    <text x="970" y="444" font-family="Segoe UI, Arial" font-size="19" font-weight="700" fill="#1F3864" text-anchor="middle">OpenAPI</text>
+    <text x="970" y="468" font-family="Segoe UI, Arial" font-size="14" fill="#6B7280" text-anchor="middle">Swagger UI / contrato</text>
+  
+    <rect x="470" y="470" width="250" height="120" rx="16" fill="#FDF3E3" stroke="#B45309" stroke-width="2"/>
+    <text x="595" y="504" font-family="Segoe UI, Arial" font-size="19" font-weight="700" fill="#1F3864" text-anchor="middle">Fuente de percentiles</text>
+    <text x="595" y="528" font-family="Segoe UI, Arial" font-size="14" fill="#6B7280" text-anchor="middle">licencia externa (pendiente)</text>
+  
+    <line x1="330" y1="275" x2="468" y2="275" stroke="#94A3B8" stroke-width="2.4" marker-end="url(#a2)"/>
+    <text x="399" y="267" font-family="Segoe UI, Arial" font-size="14" fill="#6B7280" text-anchor="middle">HTTPS / JSON</text>
+  
+    <line x1="330" y1="475" x2="468" y2="330" stroke="#94A3B8" stroke-width="2.4" marker-end="url(#a2)"/>
+    <text x="399" y="394.5" font-family="Segoe UI, Arial" font-size="14" fill="#6B7280" text-anchor="middle">HTTPS / JSON</text>
+  
+    <line x1="722" y1="285" x2="848" y2="275" stroke="#94A3B8" stroke-width="2.4" marker-end="url(#a2)"/>
+    <text x="785" y="272" font-family="Segoe UI, Arial" font-size="14" fill="#6B7280" text-anchor="middle">JDBC / TLS</text>
+  
+    <line x1="722" y1="330" x2="848" y2="475" stroke="#94A3B8" stroke-width="2.4" marker-end="url(#a2)"/>
+    <text x="785" y="394.5" font-family="Segoe UI, Arial" font-size="14" fill="#6B7280" text-anchor="middle">contrato</text>
+  
+    <line x1="595" y1="360" x2="595" y2="468" stroke="#94A3B8" stroke-width="2.4" marker-end="url(#a2)"/>
+    <text x="595" y="406" font-family="Segoe UI, Arial" font-size="14" fill="#6B7280" text-anchor="middle">carga controlada</text>
+  <text x="595" y="640" font-family="Segoe UI, Arial" font-size="14" fill="#6B7280" text-anchor="middle">La fuente de percentiles no se inventa: si no hay licencia, el motor responde SIN_FUENTE.</text>
+  </svg>

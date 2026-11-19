@@ -1,0 +1,23 @@
+# Perfil de integracion JPA: valida los adaptadores reales de persistencia sin
+# depender de una base externa ni de Docker.
+#
+# Diferencias deliberadas con produccion:
+#   * El esquema lo genera Hibernate (create-drop) en vez de Flyway. El DDL de
+#     PostgreSQL se valida aparte con `ddl-auto: validate` contra Neon; aqui lo
+#     que se ejercita es el mapeo entidad <-> dominio y las consultas derivadas.
+#   * H2 en modo PostgreSQL, para que los tipos y el SQL se parezcan.
+spring:
+  datasource:
+    url: jdbc:h2:mem:dafit-jpa;DB_CLOSE_DELAY=-1;MODE=PostgreSQL
+    username: sa
+    password: ""
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+  flyway:
+    enabled: false
+
+dafit:
+  database:
+    verify-on-startup: false

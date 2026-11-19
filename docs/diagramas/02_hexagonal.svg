@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="700" viewBox="0 0 1180 700">
+  <defs><marker id="a3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <path d="M 0 0 L 10 5 L 0 10 z" fill="#94A3B8"/></marker></defs>
+  <rect width="100%" height="100%" fill="#FFFFFF"/>
+  <text x="590" y="56" font-family="Georgia, serif" font-size="29" font-weight="700" fill="#1F3864" text-anchor="middle">Arquitectura hexagonal</text>
+  <text x="590" y="88" font-family="Segoe UI, Arial" font-size="16" fill="#6B7280" text-anchor="middle">Las dependencias apuntan siempre hacia el dominio; nunca al revés</text>
+  <rect x="70" y="130" width="1040" height="500" rx="26" fill="#F5F7FA" stroke="#D6DCE5" stroke-width="2"/>
+  <rect x="150" y="200" width="880" height="360" rx="22" fill="#EEF4F2" stroke="#2E7D6E" stroke-width="2" stroke-dasharray="7 6"/>
+  <rect x="310" y="270" width="560" height="220" rx="18" fill="#FFFFFF" stroke="#1F3864" stroke-width="2.4"/>
+  <text x="590" y="310" font-family="Segoe UI, Arial" font-size="22" font-weight="700" fill="#1F3864" text-anchor="middle">domain</text>
+  <text x="590" y="340" font-family="Segoe UI, Arial" font-size="14" fill="#6B7280" text-anchor="middle">Java puro · records · sin Spring · sin JPA</text>
+  <text x="590" y="382" font-family="Segoe UI, Arial" font-size="15" fill="#1F2937" text-anchor="middle">model · exception · port/in · port/out · service</text>
+  <text x="590" y="430" font-family="Segoe UI, Arial" font-size="14" fill="#6B7280" text-anchor="middle">reglas que no saben nada de HTTP ni de SQL</text>
+  <text x="190" y="238" font-family="Segoe UI, Arial" font-size="19" font-weight="700" fill="#2E7D6E">application</text>
+  <text x="190" y="264" font-family="Segoe UI, Arial" font-size="14" fill="#6B7280">casos de uso</text>
+  <text x="900" y="238" font-family="Segoe UI, Arial" font-size="19" font-weight="700" fill="#2E7D6E" text-anchor="end">infrastructure</text>
+  <text x="900" y="264" font-family="Segoe UI, Arial" font-size="14" fill="#6B7280" text-anchor="end">REST · JPA · config · security</text>
+  <rect x="110" y="400" width="180" height="70" rx="12" fill="#FFFFFF" stroke="#D6DCE5"/>
+  <text x="200" y="430" font-family="Segoe UI, Arial" font-size="15" font-weight="600" fill="#1F2937" text-anchor="middle">Controllers</text>
+  <text x="200" y="451" font-family="Segoe UI, Arial" font-size="13" fill="#6B7280" text-anchor="middle">entrada HTTP</text>
+  <rect x="890" y="400" width="180" height="70" rx="12" fill="#FFFFFF" stroke="#D6DCE5"/>
+  <text x="980" y="430" font-family="Segoe UI, Arial" font-size="15" font-weight="600" fill="#1F2937" text-anchor="middle">Adapters JPA</text>
+  <text x="980" y="451" font-family="Segoe UI, Arial" font-size="13" fill="#6B7280" text-anchor="middle">salida a PostgreSQL</text>
+  <line x1="290" y1="435" x2="305" y2="435" stroke="#94A3B8" stroke-width="2" marker-end="url(#a3)"/>
+  <line x1="875" y1="435" x2="890" y2="435" stroke="#94A3B8" stroke-width="2" marker-end="url(#a3)"/>
+  <text x="590" y="590" font-family="Segoe UI, Arial" font-size="15" font-weight="600" fill="#1F3864" text-anchor="middle">Regla verificada por ArchUnit en cada build</text>
+  <text x="590" y="615" font-family="Segoe UI, Arial" font-size="14" fill="#6B7280" text-anchor="middle">domain no importa Spring, JPA ni infrastructure</text>
+  </svg>

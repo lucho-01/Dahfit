@@ -1,0 +1,37 @@
+# DAHIAN / DAFIT
+# Este repo declara su propio .gitignore porque el repositorio de origen es el
+# directorio personal del usuario (~). Sin este archivo, .env acabaría en el
+# índice de git con credenciales de producción.
+
+# --- Secretos -------------------------------------------------------------
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.jks
+application-local.*.yml
+application-prod.*.yml
+
+# --- Build ----------------------------------------------------------------
+target/
+build/
+out/
+!.mvn/wrapper/maven-wrapper.jar
+
+# --- IDE / SO -------------------------------------------------------------
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+.settings/
+.classpath
+.project
+*.log
+.DS_Store
+Thumbs.db
+
+# --- Runtime --------------------------------------------------------------
+*.log
+logs/

@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="620" viewBox="0 0 1180 620">
+  <defs><marker id="a4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <path d="M 0 0 L 10 5 L 0 10 z" fill="#94A3B8"/></marker></defs>
+  <rect width="100%" height="100%" fill="#FFFFFF"/>
+  <text x="590" y="56" font-family="Georgia, serif" font-size="29" font-weight="700" fill="#1F3864" text-anchor="middle">Filtro de seguridad</text>
+  <text x="590" y="88" font-family="Segoe UI, Arial" font-size="16" fill="#6B7280" text-anchor="middle">Solo se activa con dafit.security.enabled=true</text>
+  
+    <rect x="70" y="170" width="220" height="90" rx="14" fill="#F5F7FA" stroke="#D6DCE5" stroke-width="2"/>
+    <text x="180" y="203" font-family="Segoe UI, Arial" font-size="17" font-weight="700" fill="#1F3864" text-anchor="middle">Petición</text>
+    <text x="180" y="226" font-family="Segoe UI, Arial" font-size="13" fill="#6B7280" text-anchor="middle">HTTPS</text>
+  
+    <rect x="360" y="150" width="260" height="130" rx="14" fill="#E6F2EF" stroke="#2E7D6E" stroke-width="2"/>
+    <text x="490" y="183" font-family="Segoe UI, Arial" font-size="17" font-weight="700" fill="#1F3864" text-anchor="middle">JwtAuthenticationFilter</text>
+    <text x="490" y="206" font-family="Segoe UI, Arial" font-size="13" fill="#6B7280" text-anchor="middle">lee Authorization: Bearer</text>
+  
+    <rect x="700" y="150" width="240" height="130" rx="14" fill="#F5F7FA" stroke="#D6DCE5" stroke-width="2"/>
+    <text x="820" y="183" font-family="Segoe UI, Arial" font-size="17" font-weight="700" fill="#1F3864" text-anchor="middle">SecurityFilterChain</text>
+    <text x="820" y="206" font-family="Segoe UI, Arial" font-size="13" fill="#6B7280" text-anchor="middle">rutas públicas / privadas</text>
+  
+    <rect x="360" y="380" width="260" height="110" rx="14" fill="#FBEDED" stroke="#9B2C2C" stroke-width="2"/>
+    <text x="490" y="413" font-family="Segoe UI, Arial" font-size="17" font-weight="700" fill="#1F3864" text-anchor="middle">JWT inválido o ausente</text>
+    <text x="490" y="436" font-family="Segoe UI, Arial" font-size="13" fill="#6B7280" text-anchor="middle">no autentica</text>
+  
+    <rect x="700" y="380" width="240" height="110" rx="14" fill="#FDF3E3" stroke="#B45309" stroke-width="2"/>
+    <text x="820" y="413" font-family="Segoe UI, Arial" font-size="17" font-weight="700" fill="#1F3864" text-anchor="middle">401 Unauthorized</text>
+    <text x="820" y="436" font-family="Segoe UI, Arial" font-size="13" fill="#6B7280" text-anchor="middle">HttpStatusEntryPoint</text>
+  
+    <rect x="990" y="150" width="120" height="130" rx="14" fill="#F5F7FA" stroke="#D6DCE5" stroke-width="2"/>
+    <text x="1050" y="183" font-family="Segoe UI, Arial" font-size="17" font-weight="700" fill="#1F3864" text-anchor="middle">Controller</text>
+    <text x="1050" y="206" font-family="Segoe UI, Arial" font-size="13" fill="#6B7280" text-anchor="middle">REST</text>
+  <line x1="290" y1="215" x2="356" y2="215" stroke="#94A3B8" stroke-width="2.2" marker-end="url(#a4)"/>
+  <line x1="620" y1="215" x2="696" y2="215" stroke="#94A3B8" stroke-width="2.2" marker-end="url(#a4)"/>
+  <line x1="940" y1="215" x2="986" y2="215" stroke="#94A3B8" stroke-width="2.2" marker-end="url(#a4)"/>
+  <line x1="430" y1="280" x2="430" y2="376" stroke="#9B2C2C" stroke-width="2" marker-end="url(#a4)"/>
+  <line x1="620" y1="435" x2="696" y2="435" stroke="#94A3B8" stroke-width="2.2" marker-end="url(#a4)"/>
+  <text x="455" y="330" font-family="Segoe UI, Arial" font-size="13" fill="#9B2C2C">token malo</text>
+  <text x="810" y="330" font-family="Segoe UI, Arial" font-size="13" fill="#6B7280">ruta privada</text>
+  <text x="590" y="560" font-family="Segoe UI, Arial" font-size="14" fill="#6B7280" text-anchor="middle">Públicos: /api/auth/**, alta de usuario y credenciales, /actuator/health, OpenAPI.</text>
+  </svg>

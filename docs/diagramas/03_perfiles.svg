@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="560" viewBox="0 0 1180 560">
+  <rect width="100%" height="100%" fill="#FFFFFF"/>
+  <text x="590" y="56" font-family="Georgia, serif" font-size="29" font-weight="700" fill="#1F3864" text-anchor="middle">Tres perfiles, un solo código</text>
+  <text x="590" y="88" font-family="Segoe UI, Arial" font-size="16" fill="#6B7280" text-anchor="middle">El perfil decide qué adaptador se ensambla; el dominio no cambia</text>
+  
+    <rect x="70" y="150" width="330" height="330" rx="18" fill="#EEF4F2" stroke="#2E7D6E" stroke-width="2"/>
+    <text x="235" y="190" font-family="Segoe UI, Arial" font-size="20" font-weight="700" fill="#1F3864" text-anchor="middle">test</text>
+    <text x="235" y="214" font-family="Segoe UI, Arial" font-size="14" fill="#6B7280" text-anchor="middle">suite automática</text>
+    <text x="235" y="258" font-family="Segoe UI, Arial" font-size="15" fill="#1F2937" text-anchor="middle">InMemory* para 14 puertos</text><text x="235" y="296" font-family="Segoe UI, Arial" font-size="15" fill="#1F2937" text-anchor="middle">H2 en memoria</text><text x="235" y="334" font-family="Segoe UI, Arial" font-size="15" fill="#1F2937" text-anchor="middle">Flyway desactivado</text><text x="235" y="372" font-family="Segoe UI, Arial" font-size="15" fill="#1F2937" text-anchor="middle">Sin red, sin Neon</text>
+  
+    <rect x="425" y="150" width="330" height="330" rx="18" fill="#F3F6FB" stroke="#1F3864" stroke-width="2"/>
+    <text x="590" y="190" font-family="Segoe UI, Arial" font-size="20" font-weight="700" fill="#1F3864" text-anchor="middle">jpa</text>
+    <text x="590" y="214" font-family="Segoe UI, Arial" font-size="14" fill="#6B7280" text-anchor="middle">solo tests de persistencia</text>
+    <text x="590" y="258" font-family="Segoe UI, Arial" font-size="15" fill="#1F2937" text-anchor="middle">*JpaAdapter reales</text><text x="590" y="296" font-family="Segoe UI, Arial" font-size="15" fill="#1F2937" text-anchor="middle">H2 modo PostgreSQL</text><text x="590" y="334" font-family="Segoe UI, Arial" font-size="15" fill="#1F2937" text-anchor="middle">Esquema generado por Hibernate</text><text x="590" y="372" font-family="Segoe UI, Arial" font-size="15" fill="#1F2937" text-anchor="middle">Flush + clear + relectura</text>
+  
+    <rect x="780" y="150" width="330" height="330" rx="18" fill="#F5F7FA" stroke="#D6DCE5" stroke-width="2"/>
+    <text x="945" y="190" font-family="Segoe UI, Arial" font-size="20" font-weight="700" fill="#1F3864" text-anchor="middle">default / prod</text>
+    <text x="945" y="214" font-family="Segoe UI, Arial" font-size="14" fill="#6B7280" text-anchor="middle">local y producción</text>
+    <text x="945" y="258" font-family="Segoe UI, Arial" font-size="15" fill="#1F2937" text-anchor="middle">*JpaAdapter reales</text><text x="945" y="296" font-family="Segoe UI, Arial" font-size="15" fill="#1F2937" text-anchor="middle">PostgreSQL (Neon)</text><text x="945" y="334" font-family="Segoe UI, Arial" font-size="15" fill="#1F2937" text-anchor="middle">Flyway V1–V4</text><text x="945" y="372" font-family="Segoe UI, Arial" font-size="15" fill="#1F2937" text-anchor="middle">ddl-auto: validate</text>
+  <text x="590" y="520" font-family="Segoe UI, Arial" font-size="14" fill="#6B7280" text-anchor="middle">Un test de contexto falla si un puerto tiene dos adaptadores activos: la ambigüedad se detecta al instante.</text>
+  </svg>

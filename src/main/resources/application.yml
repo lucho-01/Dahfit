@@ -1,0 +1,117 @@
+spring:
+  application:
+    name: dafit
+  jackson:
+    default-property-inclusion: non_null
+    serialization:
+      write-dates-as-timestamps: false
+
+  # Los valores vienen de .env (DotEnvEnvironmentPostProcessor) o de variables
+  # de entorno reales en produccion. No hay credenciales en este archivo.
+  datasource:
+    url: ${DATABASE_URL:}
+    username: ${DATABASE_USER:}
+    password: ${DATABASE_PASSWORD:}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      # Neon (plan gratuito) cierra conexiones inactivas y el pooler no admite
+      # demasiadas simultaneas: se mantiene el pool pequeno y con vida corta.
+      pool-name: dafit-pool
+      maximum-pool-size: 5
+      minimum-idle: 1
+      connection-timeout: 10000
+      idle-timeout: 300000
+      max-lifetime: 600000
+      # Detecta la base suspendida de Neon y evita entregar conexiones muertas.
+      validation-timeout: 5000
+      keepalive-time: 120000
+
+  jpa:
+    open-in-view: false
+    hibernate:
+      # Flyway es la unica fuente de verdad del esquema.
+      ddl-auto: validate
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+        format_sql: false
+
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    locations: classpath:db/migration
+
+server:
+  port: 8080
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+# ---------------------------------------------------------------------------
+# Parametros del motor DAFIT.
+# Cada valor esta ligado a una decision de docs/DAHIAN_02_Correcciones_Propuestas.md
+# ---------------------------------------------------------------------------
+dafit:
+  database:
+    # Abre una conexion real contra Neon al arrancar y falla rapido si no hay.
+    verify-on-startup: true
+
+  engine:
+    # Version por defecto al crear nuevas evaluaciones (§7.4, C-13)
+    default-algorithm: EPLEY_V1
+    # Escala de etiquetas. SPEC_V1 = la del documento original (§7.3).
+    # Cambiar a RECALIBRATED_V1 cuando se apruebe C-10.
+    # R-13: la variable de entorno debe poder sobrescribirla; antes estaba fija
+    # y DAFIT_RANK_SCALE no tenia ningun efecto.
+    rank-scale: ${DAFIT_RANK_SCALE:SPEC_V1}
+
+  assessment:
+    # C-05: ventana de busqueda del peso corporal usado en la fuerza relativa
+    bodyweight-lookup-days: 7
+    # C-02: ventana de repeticiones para elegibilidad oficial (§7.1)
+    official-reps-min: 1
+    official-reps-max: 10
+    # C-09: estrategia de agregacion muscular. MAX no penaliza registrar mas.
+    muscle-aggregation: MAX
+    # C-14: cobertura minima para emitir un rango muscular oficial
+    min-primary-tests: 1
+    min-coverage-ratio: 0.60
+    # §7.4: el rango global exige los 8 musculos evaluados
+    require-all-muscles-for-global: true
+
+  improvement:
+    # §7.5
+    official-threshold-percent: 5.0
+    # C-11 (PENDIENTE): margen de error asumido del estimador
+    estimator-error-percent: 3.0
+    require-high-confidence: true
+
+  outlier:
+    # C-16 (PENDIENTE de aprobacion)
+    max-multiple-of-history: 3.0
+    max-e1rm-jump-percent: 40.0
+
+  gamification:
+    # C-19
+    daily-xp-cap: 200
+    weekly-xp-cap: 500
+    max-xp-sessions-per-day: 2
+    session-completed-xp: 50
+    first-session-of-week-xp: 20
+    four-week-review-xp: 100
+
+  security:
+    # El API queda abierto hasta que el frontend integre el login. Al pasar a
+    # true, todo exige Bearer token salvo /api/auth/**, salud y OpenAPI.
+    enabled: ${DAFIT_SECURITY_ENABLED:false}
+    # HS256: minimo 32 bytes. Sin valor, arrancar con enabled=true falla.
+    jwt-secret: ${DAFIT_JWT_SECRET:}
+    jwt-ttl-minutes: 60
+
+logging:
+  level:
+    com.dafit: DEBUG

@@ -1,0 +1,394 @@
+{
+  "info": {
+    "name": "DAFIT API",
+    "description": "Coleccion de pruebas manuales del backend DAFIT.\n\nBase: http://localhost:8080\nSeguridad apagada por defecto (dafit.security.enabled=false).\nSi la enciendes, ejecuta primero Login: guarda {{token}} y la coleccion lo envia como Bearer.\n\nLos IDs de ejercicios sembrados empiezan por 00000000-0000-4000-8000-0000000000NN.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080" },
+    { "key": "userId", "value": "" },
+    { "key": "exerciseId", "value": "00000000-0000-4000-8000-000000000001" },
+    { "key": "routineId", "value": "" },
+    { "key": "workoutId", "value": "" },
+    { "key": "setUuid", "value": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa" },
+    { "key": "email", "value": "atleta@example.com" },
+    { "key": "password", "value": "secreto-123" },
+    { "key": "token", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "00 - Salud y contrato",
+      "item": [
+        {
+          "name": "Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/actuator/health"
+          }
+        },
+        {
+          "name": "OpenAPI JSON",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/v3/api-docs"
+          }
+        }
+      ]
+    },
+    {
+      "name": "01 - Usuario y credenciales",
+      "item": [
+        {
+          "name": "Crear usuario",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.collectionVariables.set('userId', body.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"displayName\": \"Ana\",\n  \"role\": \"ATHLETE\",\n  \"sex\": \"MALE\",\n  \"birthDate\": \"1995-04-02\",\n  \"bodyweightKg\": 74.20,\n  \"preferredUnit\": \"KG\",\n  \"timeZone\": \"America/Bogota\",\n  \"benchmarkConsent\": true\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/users"
+          }
+        },
+        {
+          "name": "Crear credenciales",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/users/{{userId}}/credentials"
+          }
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.collectionVariables.set('token', body.token);",
+                  "pm.collectionVariables.set('userId', body.userId);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/auth/login"
+          }
+        },
+        {
+          "name": "Perfil del usuario",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/users/{{userId}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "02 - Peso corporal",
+      "item": [
+        {
+          "name": "Registrar pesada",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"weightKg\": 73.90,\n  \"date\": \"2026-11-05\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/users/{{userId}}/body-metrics"
+          }
+        },
+        {
+          "name": "Historico de peso",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/users/{{userId}}/body-metrics"
+          }
+        }
+      ]
+    },
+    {
+      "name": "03 - Catalogo de ejercicios",
+      "item": [
+        {
+          "name": "Listar ejercicios",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/exercises?evaluable=true"
+          }
+        },
+        {
+          "name": "Detalle de ejercicio",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/exercises/{{exerciseId}}"
+          }
+        },
+        {
+          "name": "Crear ejercicio",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.collectionVariables.set('exerciseId', body.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Press banca\",\n  \"equipment\": \"BARBELL\",\n  \"loadMode\": \"TOTAL\",\n  \"unilateral\": false,\n  \"muscles\": [\"CHEST\", \"TRICEPS\"],\n  \"evaluable\": true\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/exercises"
+          }
+        }
+      ]
+    },
+    {
+      "name": "04 - Rutinas",
+      "item": [
+        {
+          "name": "Crear rutina",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.collectionVariables.set('routineId', body.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ownerId\": \"{{userId}}\",\n  \"name\": \"Fuerza A\",\n  \"exercises\": [\n    { \"exerciseId\": \"{{exerciseId}}\", \"targetSets\": 3, \"targetReps\": 5, \"restSeconds\": 180 }\n  ]\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/routines"
+          }
+        },
+        {
+          "name": "Rutinas del usuario",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/users/{{userId}}/routines"
+          }
+        },
+        {
+          "name": "Detalle de rutina",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/routines/{{routineId}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "05 - Entrenamiento",
+      "item": [
+        {
+          "name": "Iniciar sesion",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.collectionVariables.set('workoutId', body.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": \"{{userId}}\",\n  \"localDate\": \"2026-11-05\",\n  \"timeZone\": \"America/Bogota\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/workouts"
+          }
+        },
+        {
+          "name": "Registrar serie",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"clientUuid\": \"{{setUuid}}\",\n  \"exerciseId\": \"{{exerciseId}}\",\n  \"loadKg\": 100,\n  \"inputUnit\": \"KG\",\n  \"loadMode\": \"TOTAL\",\n  \"implementCount\": 1,\n  \"reps\": 5,\n  \"rir\": 2,\n  \"type\": \"WORKING\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/workouts/{{workoutId}}/sets"
+          }
+        },
+        {
+          "name": "Sesion en curso",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/users/{{userId}}/workouts/current"
+          }
+        },
+        {
+          "name": "Cerrar sesion",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{baseUrl}}/api/workouts/{{workoutId}}/finish"
+          }
+        },
+        {
+          "name": "Detalle de sesion",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/workouts/{{workoutId}}"
+          }
+        },
+        {
+          "name": "Historial de sesiones",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/users/{{userId}}/workouts?limit=20"
+          }
+        }
+      ]
+    },
+    {
+      "name": "06 - Gamificacion",
+      "item": [
+        {
+          "name": "Resumen XP / racha / insignias",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/users/{{userId}}/gamification"
+          }
+        }
+      ]
+    },
+    {
+      "name": "07 - Sincronizacion offline",
+      "item": [
+        {
+          "name": "Lote (serie + cierre)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": \"{{userId}}\",\n  \"items\": [\n    {\n      \"target\": \"WORKOUT_SET\",\n      \"clientUuid\": \"{{setUuid}}\",\n      \"workoutId\": \"{{workoutId}}\",\n      \"exerciseId\": \"{{exerciseId}}\",\n      \"loadKg\": 80,\n      \"inputUnit\": \"KG\",\n      \"loadMode\": \"TOTAL\",\n      \"implementCount\": 1,\n      \"reps\": 5,\n      \"rir\": 1,\n      \"type\": \"WORKING\"\n    },\n    { \"target\": \"WORKOUT_FINISH\", \"workoutId\": \"{{workoutId}}\" }\n  ]\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/sync/batch"
+          }
+        }
+      ]
+    },
+    {
+      "name": "08 - Evaluaciones",
+      "item": [
+        {
+          "name": "Evaluar ejercicio (sin tabla: SIN_FUENTE)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"totalLoadKg\": 100,\n  \"reps\": 5,\n  \"rir\": 2,\n  \"sex\": \"MALE\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": "{{baseUrl}}/api/users/{{userId}}/exercises/{{exerciseId}}/assessments"
+          }
+        },
+        {
+          "name": "Resumen de evaluaciones",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/users/{{userId}}/assessments"
+          }
+        },
+        {
+          "name": "Evaluar musculo",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{baseUrl}}/api/users/{{userId}}/muscles/CHEST/assessment"
+          }
+        },
+        {
+          "name": "Rango global",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{baseUrl}}/api/users/{{userId}}/global-assessment"
+          }
+        }
+      ]
+    }
+  ]
+}

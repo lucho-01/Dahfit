@@ -1,0 +1,124 @@
+-- ---------------------------------------------------------------------------
+-- V2 - Catalogo semilla de ejercicios, coeficientes y pruebas primarias.
+--
+-- Alcance deliberado:
+--   * NO se siembran benchmark_tables. La especificacion (DAHIAN_01, linea 265)
+--     dice que no hay fuente de percentiles licenciada, y el dominio prefiere
+--     "SIN_FUENTE" antes que inventar cargas. Las evaluaciones devolveran
+--     SIN_FUENTE hasta que se cargue una tabla con licencia.
+--   * Los coeficientes de participacion son pesos de diseno de DAFIT v1
+--     (aprobados a mano), no porcentajes fisiologicos medidos. Estan
+--     versionados para poder recalcular cuando cambien.
+--   * Una prueba primaria por musculo. Los ocho musculos quedan cubiertos.
+--
+-- IDs fijos para que la semilla sea reproducible e idempotente entre entornos.
+-- ---------------------------------------------------------------------------
+
+-- ------------------------------- Ejercicios --------------------------------
+
+INSERT INTO exercises
+    (id, name, equipment, load_mode, unilateral, evaluable, bodyweight_factor, active, created_at)
+VALUES
+    ('00000000-0000-4000-8000-000000000001', 'Press banca',
+     'BARBELL', 'TOTAL', FALSE, TRUE, NULL, TRUE, NOW()),
+
+    ('00000000-0000-4000-8000-000000000002', 'Press inclinado con mancuernas',
+     'DUMBBELL', 'PER_HAND', FALSE, TRUE, NULL, TRUE, NOW()),
+
+    ('00000000-0000-4000-8000-000000000003', 'Remo con barra',
+     'BARBELL', 'TOTAL', FALSE, TRUE, NULL, TRUE, NOW()),
+
+    ('00000000-0000-4000-8000-000000000004', 'Dominadas',
+     'BODYWEIGHT', 'BODYWEIGHT_ADDED', FALSE, TRUE, 1.000, TRUE, NOW()),
+
+    ('00000000-0000-4000-8000-000000000005', 'Press militar con barra',
+     'BARBELL', 'TOTAL', FALSE, TRUE, NULL, TRUE, NOW()),
+
+    ('00000000-0000-4000-8000-000000000006', 'Elevaciones laterales',
+     'DUMBBELL', 'PER_HAND', FALSE, FALSE, NULL, TRUE, NOW()),
+
+    ('00000000-0000-4000-8000-000000000007', 'Curl con barra',
+     'BARBELL', 'TOTAL', FALSE, TRUE, NULL, TRUE, NOW()),
+
+    ('00000000-0000-4000-8000-000000000008', 'Curl martillo',
+     'DUMBBELL', 'PER_HAND', FALSE, FALSE, NULL, TRUE, NOW()),
+
+    ('00000000-0000-4000-8000-000000000009', 'Fondos en paralelas',
+     'BODYWEIGHT', 'BODYWEIGHT_ADDED', FALSE, TRUE, 1.000, TRUE, NOW()),
+
+    ('00000000-0000-4000-8000-000000000010', 'Extension de triceps en polea',
+     'CABLE', 'MACHINE_STACK', FALSE, FALSE, NULL, TRUE, NOW()),
+
+    ('00000000-0000-4000-8000-000000000011', 'Sentadilla trasera',
+     'BARBELL', 'TOTAL', FALSE, TRUE, NULL, TRUE, NOW()),
+
+    ('00000000-0000-4000-8000-000000000012', 'Prensa de piernas',
+     'MACHINE', 'MACHINE_STACK', FALSE, FALSE, NULL, TRUE, NOW()),
+
+    ('00000000-0000-4000-8000-000000000013', 'Peso muerto rumano',
+     'BARBELL', 'TOTAL', FALSE, TRUE, NULL, TRUE, NOW()),
+
+    ('00000000-0000-4000-8000-000000000014', 'Curl femoral en maquina',
+     'MACHINE', 'MACHINE_STACK', FALSE, FALSE, NULL, TRUE, NOW()),
+
+    ('00000000-0000-4000-8000-000000000015', 'Hip thrust con barra',
+     'BARBELL', 'TOTAL', FALSE, TRUE, NULL, TRUE, NOW()),
+
+    ('00000000-0000-4000-8000-000000000016', 'Zancadas con mancuernas',
+     'DUMBBELL', 'PER_HAND', TRUE, FALSE, NULL, TRUE, NOW());
+
+-- --------------------------- Musculo principal -----------------------------
+
+INSERT INTO exercise_muscles (exercise_id, muscle)
+VALUES
+    ('00000000-0000-4000-8000-000000000001', 'CHEST'),
+    ('00000000-0000-4000-8000-000000000002', 'CHEST'),
+    ('00000000-0000-4000-8000-000000000003', 'BACK'),
+    ('00000000-0000-4000-8000-000000000004', 'BACK'),
+    ('00000000-0000-4000-8000-000000000005', 'SHOULDERS'),
+    ('00000000-0000-4000-8000-000000000006', 'SHOULDERS'),
+    ('00000000-0000-4000-8000-000000000007', 'BICEPS'),
+    ('00000000-0000-4000-8000-000000000008', 'BICEPS'),
+    ('00000000-0000-4000-8000-000000000009', 'TRICEPS'),
+    ('00000000-0000-4000-8000-000000000010', 'TRICEPS'),
+    ('00000000-0000-4000-8000-000000000011', 'QUADRICEPS'),
+    ('00000000-0000-4000-8000-000000000012', 'QUADRICEPS'),
+    ('00000000-0000-4000-8000-000000000013', 'HAMSTRINGS'),
+    ('00000000-0000-4000-8000-000000000014', 'HAMSTRINGS'),
+    ('00000000-0000-4000-8000-000000000015', 'GLUTES'),
+    ('00000000-0000-4000-8000-000000000016', 'GLUTES');
+
+-- ------------------------------ Coeficientes ------------------------------
+
+INSERT INTO muscle_coefficients
+    (id, exercise_id, muscle, coefficient, version, approved)
+VALUES
+    ('10000000-0000-4000-8000-000000000001', '00000000-0000-4000-8000-000000000001', 'CHEST',      1.000, 'v1', TRUE),
+    ('10000000-0000-4000-8000-000000000002', '00000000-0000-4000-8000-000000000002', 'CHEST',      0.700, 'v1', TRUE),
+    ('10000000-0000-4000-8000-000000000003', '00000000-0000-4000-8000-000000000003', 'BACK',       1.000, 'v1', TRUE),
+    ('10000000-0000-4000-8000-000000000004', '00000000-0000-4000-8000-000000000004', 'BACK',       0.800, 'v1', TRUE),
+    ('10000000-0000-4000-8000-000000000005', '00000000-0000-4000-8000-000000000005', 'SHOULDERS',  1.000, 'v1', TRUE),
+    ('10000000-0000-4000-8000-000000000006', '00000000-0000-4000-8000-000000000006', 'SHOULDERS',  0.600, 'v1', TRUE),
+    ('10000000-0000-4000-8000-000000000007', '00000000-0000-4000-8000-000000000007', 'BICEPS',     1.000, 'v1', TRUE),
+    ('10000000-0000-4000-8000-000000000008', '00000000-0000-4000-8000-000000000008', 'BICEPS',     0.700, 'v1', TRUE),
+    ('10000000-0000-4000-8000-000000000009', '00000000-0000-4000-8000-000000000009', 'TRICEPS',    1.000, 'v1', TRUE),
+    ('10000000-0000-4000-8000-000000000010', '00000000-0000-4000-8000-000000000010', 'TRICEPS',    0.700, 'v1', TRUE),
+    ('10000000-0000-4000-8000-000000000011', '00000000-0000-4000-8000-000000000011', 'QUADRICEPS', 1.000, 'v1', TRUE),
+    ('10000000-0000-4000-8000-000000000012', '00000000-0000-4000-8000-000000000012', 'QUADRICEPS', 0.700, 'v1', TRUE),
+    ('10000000-0000-4000-8000-000000000013', '00000000-0000-4000-8000-000000000013', 'HAMSTRINGS', 1.000, 'v1', TRUE),
+    ('10000000-0000-4000-8000-000000000014', '00000000-0000-4000-8000-000000000014', 'HAMSTRINGS', 0.700, 'v1', TRUE),
+    ('10000000-0000-4000-8000-000000000015', '00000000-0000-4000-8000-000000000015', 'GLUTES',     1.000, 'v1', TRUE),
+    ('10000000-0000-4000-8000-000000000016', '00000000-0000-4000-8000-000000000016', 'GLUTES',     0.700, 'v1', TRUE);
+
+-- ---------------------------- Pruebas primarias ----------------------------
+
+INSERT INTO primary_tests (id, muscle, exercise_id, primary_)
+VALUES
+    ('20000000-0000-4000-8000-000000000001', 'CHEST',      '00000000-0000-4000-8000-000000000001', TRUE),
+    ('20000000-0000-4000-8000-000000000002', 'BACK',       '00000000-0000-4000-8000-000000000003', TRUE),
+    ('20000000-0000-4000-8000-000000000003', 'SHOULDERS',  '00000000-0000-4000-8000-000000000005', TRUE),
+    ('20000000-0000-4000-8000-000000000004', 'BICEPS',     '00000000-0000-4000-8000-000000000007', TRUE),
+    ('20000000-0000-4000-8000-000000000005', 'TRICEPS',    '00000000-0000-4000-8000-000000000009', TRUE),
+    ('20000000-0000-4000-8000-000000000006', 'QUADRICEPS', '00000000-0000-4000-8000-000000000011', TRUE),
+    ('20000000-0000-4000-8000-000000000007', 'HAMSTRINGS', '00000000-0000-4000-8000-000000000013', TRUE),
+    ('20000000-0000-4000-8000-000000000008', 'GLUTES',     '00000000-0000-4000-8000-000000000015', TRUE);
