@@ -52,12 +52,14 @@ class SecurityIntegrationTest {
         UUID userId = registerUser();
         String email = uniqueEmail();
 
+        // R-02/R-09: con seguridad encendida y actor nulo (sin token),
+        // la cuenta queda pendiente de reclamación: se devuelve 200 con claimCode.
         mockMvc.perform(post("/api/users/{id}/credentials", userId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {"email":"%s","password":"secreto-123"}
                                 """.formatted(email.toUpperCase())))
-                .andExpect(status().isNoContent());
+                .andExpect(status().isOk());
 
         MvcResult login = mockMvc.perform(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -164,7 +166,7 @@ class SecurityIntegrationTest {
                         .content("""
                                 {"email":"%s","password":"%s"}
                                 """.formatted(email, password)))
-                .andExpect(status().isNoContent());
+                .andExpect(status().isOk());
     }
 
     private static String uniqueEmail() {

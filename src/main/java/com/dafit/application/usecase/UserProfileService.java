@@ -10,6 +10,7 @@ import com.dafit.domain.model.UserRole;
 import com.dafit.domain.model.WeightUnit;
 import com.dafit.domain.port.in.GetUserUseCase;
 import com.dafit.domain.port.in.RegisterUserUseCase;
+import com.dafit.domain.port.in.RegisterUserUseCase.Command;
 import com.dafit.domain.port.out.BodyMetricRepository;
 import com.dafit.domain.port.out.UserRepository;
 
@@ -30,7 +31,7 @@ import java.util.UUID;
  *       {@code body_metrics} se mueven juntos).</li>
  * </ul>
  */
-public class UserProfileService implements GetUserUseCase, RegisterUserUseCase {
+public class UserProfileService implements GetUserUseCase {
 
     private final UserRepository users;
     private final BodyMetricRepository bodyMetrics;
@@ -59,7 +60,6 @@ public class UserProfileService implements GetUserUseCase, RegisterUserUseCase {
 
     // --- RegisterUserUseCase ----------------------------------------------
 
-    @Override
     public UUID register(Command command) {
         UserRole role = command.role() == null ? UserRole.ATHLETE : command.role();
         if (command.selfSignup() && role != UserRole.ATHLETE) {

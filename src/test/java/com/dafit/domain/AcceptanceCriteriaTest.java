@@ -69,7 +69,10 @@ class AcceptanceCriteriaTest {
     void conversaLbAKg() {
         Kg load = Kg.ofLb("95");
 
-        assertThat(load.value()).isEqualByComparingTo("43.0913");
+        // C-12: escala 3 decimales (gramo), redondeo HALF_UP.
+        // 95 lb × 0.45359237 = 43.09127515 → 43.091 (3 decimales).
+        // El punto "escala 4" de la revisión está desactualizado.
+        assertThat(load.value()).isEqualByComparingTo("43.091");
     }
 
     @Test

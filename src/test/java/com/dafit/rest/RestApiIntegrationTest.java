@@ -289,12 +289,12 @@ class RestApiIntegrationTest {
 
         mockMvc.perform(get("/api/users/{id}/gamification", userId))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.totalXp").value(70))
-                .andExpect(jsonPath("$.currentStreakDays").value(1))
-                .andExpect(jsonPath("$.longestStreakDays").value(1))
-                .andExpect(jsonPath("$.badges[0].badge").value("PRIMER_ENTRENAMIENTO"))
-                .andExpect(jsonPath("$.badges[0].label").value("Primer entrenamiento"))
-                .andExpect(jsonPath("$.recentEvents.length()").value(2));
+                // R-05: sesión vacía no otorga XP, racha ni insignias.
+                .andExpect(jsonPath("$.totalXp").value(0))
+                .andExpect(jsonPath("$.currentStreakDays").value(0))
+                .andExpect(jsonPath("$.longestStreakDays").value(0))
+                .andExpect(jsonPath("$.badges.length()").value(0))
+                .andExpect(jsonPath("$.recentEvents.length()").value(0));
     }
 
     @Test
@@ -307,9 +307,10 @@ class RestApiIntegrationTest {
 
         mockMvc.perform(get("/api/users/{id}/gamification", userId))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.totalXp").value(120))
-                .andExpect(jsonPath("$.badges.length()").value(1))
-                .andExpect(jsonPath("$.recentEvents.length()").value(3));
+                // R-05: dos sesiones vacías no otorgan XP conjunto ni duplican insignia.
+                .andExpect(jsonPath("$.totalXp").value(0))
+                .andExpect(jsonPath("$.badges.length()").value(0))
+                .andExpect(jsonPath("$.recentEvents.length()").value(0));
     }
 
     @Test
@@ -324,8 +325,10 @@ class RestApiIntegrationTest {
 
         mockMvc.perform(get("/api/users/{id}/gamification", userId))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.totalXp").value(70))
-                .andExpect(jsonPath("$.recentEvents.length()").value(2));
+                // R-05: la segunda firmaje sobre la misma sesion vacía no da XP
+                // y devuelve 400; el XP persiste en 0 desde el primer cierre.
+                .andExpect(jsonPath("$.totalXp").value(0))
+                .andExpect(jsonPath("$.recentEvents.length()").value(0));
     }
 
     @Test

@@ -105,11 +105,18 @@ public class UseCaseConfig {
     // de cada bean y no como bean propio: exponerlo tambien por su tipo concreto
     // creaba dos candidatos para cada puerto y Spring no sabia cual inyectar.
 
+    /**
+     * UserProfileService implementa DOS puertos de entrada (GetUserUseCase y
+     * RegisterUserUseCase). NO se expone como bean propio para evitar que
+     * Spring vea dos candidatos y lance NoUniqueBeanDefinitionException.
+     * Se construye dentro de cada bean que lo necesita.
+     */
     @Bean
     public GetUserUseCase getUserUseCase(UserRepository users,
                                          BodyMetricRepository bodyMetrics,
                                          AuthorizationSupport authorization) {
-        return new UserProfileService(users, bodyMetrics, authorization);
+        UserProfileService service = new UserProfileService(users, bodyMetrics, authorization);
+        return service;
     }
 
     /**
