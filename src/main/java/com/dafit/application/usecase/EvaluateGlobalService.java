@@ -10,6 +10,7 @@ import com.dafit.domain.service.GlobalRankCalculator;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 /** Caso de uso: evaluar el rango general. */
@@ -35,7 +36,9 @@ public class EvaluateGlobalService implements EvaluateGlobalUseCase {
         authorization.checkSameUser(actorId, userId);
         Instant at = assessedAt == null ? Instant.now() : assessedAt;
 
-        List<MuscleAssessment> muscles = muscleAssessments.findLatestForUser(userId);
+        List<MuscleAssessment> muscles = muscleAssessments.findLatestForUser(userId)
+                .map(List::of)
+                .orElse(List.of());
         GlobalAssessment assessment = calculator.calculate(userId, muscles, at);
 
         return globalAssessments.save(assessment);

@@ -14,17 +14,7 @@ import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.UUID;
 
-/**
- * Peso corporal aplicable a una evaluacion (C-05, R-11).
- *
- * <p>La ventana se mide sobre {@code measuredOn} (el dia en que el usuario se
- * peso), no sobre {@code recordedAt} (cuando subio el dato). Con
- * {@code recordedAt}, una sincronizacion offline que subia una pesada de hace un
- * mes la volvia "reciente", y una pesada retroactiva de hoy contaba como actual.
- *
- * <p>Sin pesada en la ventana NO hay fallback a un peso lejano: se lanza
- * {@code InsufficientData} y la evaluacion queda sin fuerza relativa.
- */
+/** Peso corporal aplicable a una evaluacion (C-05, R-11). */
 public class ResolveBodyweightService implements ResolveBodyweightUseCase {
 
     private final BodyMetricRepository bodyMetrics;
@@ -45,13 +35,18 @@ public class ResolveBodyweightService implements ResolveBodyweightUseCase {
     @Override
     public Kg resolve(UUID userId, Instant at) {
         LocalDate reference = referenceDate(userId, at);
-
-        return bodyMetrics.findClosestTo(userId, reference, lookupDays)
-                .map(BodyMetric::weightKg)
-                .filter(Kg::isPositive)
-                .orElseThrow(() -> new DomainException.InsufficientData(
-                        "sin peso corporal registrado en +/- " + lookupDays
-                                + " dias; la evaluacion queda sin fuerza relativa"));
+        var closest = bodyMetrics.findClosestTo(userId, reference, lookupDays);
+        if (closest == null || closest.weightKg() == null) {
+            throw new DomainException.InsufficientData(
+                    "sin peso corporal registrado en +/- " + lookupDays
+                            + " dias; la evaluacion queda sin fuerza relativa");
+        }
+        if (closest.weightKg().isPositive()) {
+            return closest.weightKg();
+        }
+        throw new DomainException.InsufficientData(
+                "sin peso corporal registrado en +/- " + lookupDays
+                        + " dias; la evaluacion queda sin fuerza relativa");
     }
 
     @Override

@@ -8,10 +8,12 @@ import com.dafit.domain.port.out.ClaimCodeRepository;
 import com.dafit.domain.port.out.CredentialsRepository;
 import com.dafit.domain.port.out.PasswordHasher;
 import com.dafit.domain.port.out.TokenIssuer;
+import com.dafit.infrastructure.security.Token;
 
 import java.security.MessageDigest;
 import java.time.Instant;
 import java.util.HexFormat;
+import java.util.Optional;
 
 /**
  * Caso de uso: login.
@@ -68,15 +70,18 @@ public class LoginService implements LoginUseCase {
             claim(stored, command.claimCode());
         }
 
-        TokenIssuer.Token token = tokens.issue(stored.userId(), stored.email(), Instant.now());
-        return new Result(token.value(), "Bearer", token.expiresAt(), stored.userId());
+        Optional<Token> tokenOpt = tokens.issue(stored.userId(), stored.email(), Instant.now());
+        Token token = tokenOpt.orElseThrow();
+        return new Result(token.getValue(), "Bearer", token.getExpiresAt(), stored.userId());
     }
 
     private void claim(UserCredentials stored, String claimCode) {
         Instant now = Instant.now();
-        ClaimCode pending = claimCodes.findByUserId(stored.userId())
-                .orElseThrow(() -> new DomainException.Forbidden(
-                        "la cuenta esta pendiente de reclamacion; pide un codigo nuevo"));
+        ClaimCode pending = claimCodes.findByUserId(stored.userId());
+        if (pending == null) {
+            throw new DomainException.Forbidden(
+                    "la cuenta esta pendiente de reclamacion; pide un codigo nuevo");
+        }
         if (!pending.isValidAt(now)) {
             throw new DomainException.Forbidden("el codigo de reclamacion ha caducado");
         }

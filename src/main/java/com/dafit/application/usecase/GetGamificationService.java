@@ -2,13 +2,15 @@ package com.dafit.application.usecase;
 
 import com.dafit.application.usecase.AuthorizationSupport;
 import com.dafit.domain.model.Streak;
+import com.dafit.domain.model.UserBadge;
 import com.dafit.domain.model.XpLevel;
 import com.dafit.domain.port.in.GetGamificationUseCase;
 import com.dafit.domain.port.out.BadgeRepository;
 import com.dafit.domain.port.out.StreakRepository;
 import com.dafit.domain.port.out.XpEventRepository;
-
+import java.util.List;
 import java.util.UUID;
+import java.time.Instant;
 
 /** Caso de uso: resumen de gamificacion para la pantalla de progreso. */
 public class GetGamificationService implements GetGamificationUseCase {
@@ -34,14 +36,17 @@ public class GetGamificationService implements GetGamificationUseCase {
     public Summary summaryFor(UUID actorId, UUID userId) {
         authorization.checkSameUser(actorId, userId);
 
-        int totalXp = xpEvents.totalPoints(userId);
+        int totalXp = (int) xpEvents.totalPoints(userId);
         Streak streak = streaks.findByUserId(userId).orElseGet(() -> Streak.empty(userId));
 
+        List<UserBadge> userBadges = badges.findByUserId(userId).stream()
+                .map(badge -> new UserBadge(UUID.randomUUID(), userId, badge, Instant.now()))
+                .toList();
         return new Summary(
                 totalXp,
                 XpLevel.of(totalXp),
                 streak,
-                badges.findByUserId(userId),
+                userBadges,
                 xpEvents.findRecent(userId, RECENT_EVENTS));
     }
 }

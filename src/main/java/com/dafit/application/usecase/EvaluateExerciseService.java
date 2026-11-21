@@ -3,6 +3,7 @@ package com.dafit.application.usecase;
 import com.dafit.application.usecase.AuthorizationSupport;
 import com.dafit.domain.exception.DomainException;
 import com.dafit.domain.model.AlgorithmVersion;
+import com.dafit.domain.model.Exercise;
 import com.dafit.domain.model.AssessmentStatus;
 import com.dafit.domain.model.BenchmarkCategory;
 import com.dafit.domain.model.BenchmarkTable;
@@ -109,6 +110,17 @@ public class EvaluateExerciseService implements EvaluateExerciseUseCase {
         exercises.findById(exerciseId)
                 .orElseThrow(() -> new DomainException.NotFound(
                         "ejercicio no encontrado: " + exerciseId));
+
+        Exercise exercise = exercises.findById(exerciseId).get();
+
+        // DEC-05: Ejercicio sin estándares registrados
+        // Si el ejercicio no es evaluable (no tiene benchmark registrado),
+        // retornar estado 'No disponible' en lugar de intentar calcular
+        if (!exercise.evaluable()) {
+            return assessments.save(ExerciseAssessment.notEvaluated(
+                    userId, exerciseId, AssessmentStatus.NO_DISPONIBLE,
+                    Optional.empty(), null, defaultVersion, null, Instant.now()));
+        }
 
         Instant at = command.assessedAt() == null ? Instant.now() : command.assessedAt();
         AlgorithmVersion version = command.algorithmVersion() == null

@@ -1,40 +1,43 @@
 package com.dafit.infrastructure.adapter.in.rest.controller;
 
+import com.dafit.application.usecase.AuthorizationSupport;
 import com.dafit.domain.model.Equipment;
 import com.dafit.domain.model.MuscleGroup;
 import com.dafit.domain.port.in.ListExercisesUseCase;
 import com.dafit.domain.port.in.RegisterExerciseUseCase;
-import com.dafit.infrastructure.adapter.in.rest.dto.request.RegisterExerciseRequest;
-import com.dafit.infrastructure.adapter.in.rest.dto.response.ExerciseResponse;
 import com.dafit.infrastructure.adapter.in.rest.dto.response.IdResponse;
+import com.dafit.infrastructure.adapter.in.rest.dto.response.ExerciseResponse;
+import com.dafit.infrastructure.adapter.in.rest.dto.request.RegisterExerciseRequest;
 import com.dafit.infrastructure.adapter.in.rest.mapper.RequestMapper;
 import com.dafit.infrastructure.adapter.in.rest.mapper.ResponseMapper;
+import com.dafit.infrastructure.adapter.in.rest.security.Actors;
+import com.dafit.infrastructure.config.DafitProperties;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-/** Catalogo de ejercicios. */
 @RestController
 @RequestMapping("/api/exercises")
 public class ExerciseController {
 
     private final ListExercisesUseCase listExercises;
     private final RegisterExerciseUseCase registerExercise;
+    private final AuthorizationSupport authorization;
+    private final DafitProperties properties;
 
-    public ExerciseController(ListExercisesUseCase listExercises, RegisterExerciseUseCase registerExercise) {
+    public ExerciseController(ListExercisesUseCase listExercises,
+                              RegisterExerciseUseCase registerExercise,
+                              AuthorizationSupport authorization,
+                              DafitProperties properties) {
         this.listExercises = listExercises;
         this.registerExercise = registerExercise;
+        this.authorization = authorization;
+        this.properties = properties;
     }
 
     @GetMapping

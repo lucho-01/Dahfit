@@ -92,7 +92,7 @@ public class RegisterCredentialsService implements RegisterCredentialsUseCase {
         }
 
         String code = newCode();
-        claimCodes.save(userId, new ClaimCode(hash(code), ClaimCode.defaultExpiry(now, CLAIM_CODE_TTL_MINUTES)));
+        claimCodes.save(new ClaimCode(hash(code), ClaimCode.defaultExpiry(now, CLAIM_CODE_TTL_MINUTES)));
         return new Result(userId, true, code);
     }
 
@@ -101,8 +101,10 @@ public class RegisterCredentialsService implements RegisterCredentialsUseCase {
             throw new DomainException.Forbidden(
                     "la cuenta ya pertenece a su titular; solo su duenio puede cambiar la contrasena");
         }
-        ClaimCode stored = claimCodes.findByUserId(existing.userId())
-                .orElseThrow(() -> new DomainException.Conflict("la cuenta esta pendiente de reclamacion"));
+        ClaimCode stored = claimCodes.findByUserId(existing.userId());
+        if (stored == null) {
+            throw new DomainException.Conflict("la cuenta esta pendiente de reclamacion");
+        }
         if (stored.canBeReplacedAt(now)) {
             return;
         }
