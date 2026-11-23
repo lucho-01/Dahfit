@@ -35,16 +35,17 @@ public class ResolveBodyweightService implements ResolveBodyweightUseCase {
     @Override
     public Kg resolve(UUID userId, Instant at) {
         LocalDate reference = referenceDate(userId, at);
-        var closest = bodyMetrics.findClosestTo(userId, reference, lookupDays);
-        if (closest == null || closest.weightKg() == null) {
-            throw new DomainException.InsufficientData(
-                    "sin peso corporal registrado en +/- " + lookupDays
-                            + " dias; la evaluacion queda sin fuerza relativa");
+        var closest = bodyMetrics.findClosestTo(userId, reference, lookupDays)
+                .orElseThrow(this::insufficientWeight);
+        if (!closest.weightKg().isPositive()) {
+            throw insufficientWeight();
         }
-        if (closest.weightKg().isPositive()) {
-            return closest.weightKg();
-        }
-        throw new DomainException.InsufficientData(
+
+        return closest.weightKg();
+    }
+
+    private DomainException.InsufficientData insufficientWeight() {
+        return new DomainException.InsufficientData(
                 "sin peso corporal registrado en +/- " + lookupDays
                         + " dias; la evaluacion queda sin fuerza relativa");
     }

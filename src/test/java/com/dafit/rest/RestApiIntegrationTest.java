@@ -5,6 +5,7 @@ import com.dafit.domain.model.BenchmarkPoint;
 import com.dafit.domain.model.BenchmarkTable;
 import com.dafit.domain.model.Sex;
 import com.dafit.domain.port.out.BenchmarkTableRepository;
+import com.dafit.domain.port.out.SyncBatchRepository;
 import com.dafit.infrastructure.adapter.in.rest.dto.response.ExerciseAssessmentResponse;
 import com.dafit.infrastructure.adapter.in.rest.dto.response.WorkoutResponse;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -31,12 +32,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /**
  * Prueba el API REST de punta a punta sobre los adaptadores en memoria.
  *
- * <p>Corre con perfil {@code test}: adaptadores en memoria y H2, sin tocar la
- * base real. El flujo completo (usuario -> pesada -> tabla -> evaluacion) se
+ * <p>Corre con perfil {@code test}: H2 y adaptadores JPA, sin tocar la base
+ * real. El flujo completo (usuario -> pesada -> tabla -> evaluacion) se
  * verifica con HTTP real, de modo que el contrato del API queda fijado sin
  * depender del motor de persistencia.
  */
-@SpringBootTest
+@SpringBootTest(properties = {
+        "spring.datasource.url=jdbc:h2:mem:dafit-rest;DB_CLOSE_DELAY=-1;MODE=PostgreSQL",
+        "spring.sql.init.mode=never",
+        "spring.flyway.enabled=false",
+        "spring.jpa.hibernate.ddl-auto=create-drop"
+})
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 class RestApiIntegrationTest {
@@ -49,6 +55,9 @@ class RestApiIntegrationTest {
 
     @Autowired
     private BenchmarkTableRepository benchmarkTables;
+
+    @Autowired
+    private SyncBatchRepository syncBatches;
 
     @Test
     void altaDeUsuarioDevuelve201() throws Exception {
@@ -151,22 +160,19 @@ class RestApiIntegrationTest {
 
     @Test
     void historicoDePesoDevuelveLaPesadaMasRecientePrimero() throws Exception {
-        UUID userId = registerUser();
-        // Fechas posteriores a la del alta, para que el orden no dependa del dia
-        // en que corre la prueba.
-        LocalDate first = LocalDate.now().plusDays(1);
-        LocalDate second = LocalDate.now().plusDays(2);
+        UUID userId = registerUserWithoutWeight();
+        LocalDate first = LocalDate.now().minusDays(1);
+        LocalDate second = LocalDate.now();
         recordBodyMetric(userId, first.toString(), "74.50");
         recordBodyMetric(userId, second.toString(), "73.80");
 
-        // 3 pesadas: la del alta mas las dos registradas despues.
         mockMvc.perform(get("/api/users/{id}/body-metrics", userId))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(3))
+                .andExpect(jsonPath("$.length()").value(2))
                 .andExpect(jsonPath("$[0].date").value(second.toString()))
                 .andExpect(jsonPath("$[0].weightKg").value(73.8))
                 .andExpect(jsonPath("$[1].date").value(first.toString()))
-                .andExpect(jsonPath("$[2].weightKg").value(74.2));
+                .andExpect(jsonPath("$[1].weightKg").value(74.5));
     }
 
     @Test
@@ -369,6 +375,16 @@ class RestApiIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.totalXp").value(70))
                 .andExpect(jsonPath("$.recentEvents.length()").value(2));
+
+        assertThat(syncBatches.findByUserId(userId)).hasSize(2)
+                .anySatisfy(history -> assertThat(history.results())
+                        .extracting(result -> result.outcome())
+                        .containsExactly(com.dafit.domain.model.SyncOutcome.APPLIED,
+                                com.dafit.domain.model.SyncOutcome.APPLIED))
+                .anySatisfy(history -> assertThat(history.results())
+                        .extracting(result -> result.outcome())
+                        .containsExactly(com.dafit.domain.model.SyncOutcome.DUPLICATE,
+                                com.dafit.domain.model.SyncOutcome.DUPLICATE));
     }
 
     @Test
@@ -411,6 +427,18 @@ class RestApiIntegrationTest {
                         .content("""
                                 {"displayName":"Ana","role":"ATHLETE","sex":"MALE",
                                  "bodyweightKg":74.20,"benchmarkConsent":true}
+                                """))
+                .andExpect(status().isCreated())
+                .andReturn();
+        return idOf(result);
+    }
+
+    private UUID registerUserWithoutWeight() throws Exception {
+        MvcResult result = mockMvc.perform(post("/api/users")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"displayName":"Ana","role":"ATHLETE","sex":"MALE",
+                                 "benchmarkConsent":true}
                                 """))
                 .andExpect(status().isCreated())
                 .andReturn();

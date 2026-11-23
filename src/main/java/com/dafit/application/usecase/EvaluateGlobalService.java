@@ -36,9 +36,7 @@ public class EvaluateGlobalService implements EvaluateGlobalUseCase {
         authorization.checkSameUser(actorId, userId);
         Instant at = assessedAt == null ? Instant.now() : assessedAt;
 
-        List<MuscleAssessment> muscles = muscleAssessments.findLatestForUser(userId)
-                .map(List::of)
-                .orElse(List.of());
+        List<MuscleAssessment> muscles = muscleAssessments.findLatestForUser(userId);
         GlobalAssessment assessment = calculator.calculate(userId, muscles, at);
 
         return globalAssessments.save(assessment);

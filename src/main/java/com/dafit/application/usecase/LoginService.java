@@ -8,7 +8,6 @@ import com.dafit.domain.port.out.ClaimCodeRepository;
 import com.dafit.domain.port.out.CredentialsRepository;
 import com.dafit.domain.port.out.PasswordHasher;
 import com.dafit.domain.port.out.TokenIssuer;
-import com.dafit.infrastructure.security.Token;
 
 import java.security.MessageDigest;
 import java.time.Instant;
@@ -70,9 +69,10 @@ public class LoginService implements LoginUseCase {
             claim(stored, command.claimCode());
         }
 
-        Optional<Token> tokenOpt = tokens.issue(stored.userId(), stored.email(), Instant.now());
-        Token token = tokenOpt.orElseThrow();
-        return new Result(token.getValue(), "Bearer", token.getExpiresAt(), stored.userId());
+        Optional<TokenIssuer.TokenData> tokenOpt =
+                tokens.issue(stored.userId(), stored.email(), Instant.now());
+        TokenIssuer.TokenData token = tokenOpt.orElseThrow();
+        return new Result(token.value(), "Bearer", token.expiresAt(), stored.userId());
     }
 
     private void claim(UserCredentials stored, String claimCode) {

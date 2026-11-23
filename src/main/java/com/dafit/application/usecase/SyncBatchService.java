@@ -2,14 +2,17 @@ package com.dafit.application.usecase;
 
 import com.dafit.domain.exception.DomainException;
 import com.dafit.domain.model.SyncBatch;
+import com.dafit.domain.model.SyncBatchHistory;
 import com.dafit.domain.model.SyncItem;
 import com.dafit.domain.model.SyncResult;
 import com.dafit.domain.model.Workout;
 import com.dafit.domain.port.in.AwardWorkoutXpUseCase;
 import com.dafit.domain.port.in.SyncBatchUseCase;
 import com.dafit.domain.port.in.WorkoutSessionUseCase;
+import com.dafit.domain.port.out.SyncBatchRepository;
 import com.dafit.domain.port.out.WorkoutRepository;
 
+import java.time.Clock;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,26 +40,36 @@ public class SyncBatchService implements SyncBatchUseCase {
     private final WorkoutSessionUseCase session;
     private final AwardWorkoutXpUseCase awardXp;
     private final AuthorizationSupport authorization;
+    private final SyncBatchRepository syncBatches;
+    private final Clock clock;
 
     public SyncBatchService(WorkoutRepository workouts,
                             WorkoutSessionUseCase session,
                             AwardWorkoutXpUseCase awardXp,
-                            AuthorizationSupport authorization) {
+                            AuthorizationSupport authorization,
+                            SyncBatchRepository syncBatches,
+                            Clock clock) {
         this.workouts = workouts;
         this.session = session;
         this.awardXp = awardXp;
         this.authorization = authorization;
+        this.syncBatches = syncBatches;
+        this.clock = clock;
     }
 
     @Override
     public List<SyncResult> process(UUID actorId, SyncBatch batch) {
         authorization.checkSameUser(actorId, batch.userId());
 
+        Instant receivedAt = clock.instant();
         List<SyncResult> results = new ArrayList<>(batch.items().size());
         for (SyncItem item : batch.items()) {
             results.add(apply(actorId, batch.userId(), item));
         }
-        return List.copyOf(results);
+        List<SyncResult> completed = List.copyOf(results);
+        syncBatches.save(new SyncBatchHistory(
+                UUID.randomUUID(), batch.userId(), receivedAt, completed));
+        return completed;
     }
 
     private SyncResult apply(UUID actorId, UUID userId, SyncItem item) {

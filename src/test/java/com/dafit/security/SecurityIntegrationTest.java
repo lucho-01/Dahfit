@@ -29,7 +29,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(properties = {
         "dafit.security.enabled=true",
         "dafit.security.jwt-secret=secreto-de-pruebas-con-mas-de-32-bytes-2026",
-        "dafit.security.jwt-ttl-minutes=60"
+        "dafit.security.jwt-ttl-minutes=60",
+        "spring.sql.init.mode=never",
+        "spring.flyway.enabled=false",
+        "spring.jpa.hibernate.ddl-auto=create-drop",
+        // Base propia: al arrancar un contexto nuevo se ejecuta schema.sql y
+        // data.sql otra vez; con la URL compartida fallaria por tablas ya
+        // existentes.
+        "spring.datasource.url=jdbc:h2:mem:dafit-sec;DB_CLOSE_DELAY=-1;MODE=PostgreSQL"
 })
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
@@ -54,18 +61,22 @@ class SecurityIntegrationTest {
 
         // R-02/R-09: con seguridad encendida y actor nulo (sin token),
         // la cuenta queda pendiente de reclamación: se devuelve 200 con claimCode.
-        mockMvc.perform(post("/api/users/{id}/credentials", userId)
+        MvcResult credentials = mockMvc.perform(post("/api/users/{id}/credentials", userId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {"email":"%s","password":"secreto-123"}
                                 """.formatted(email.toUpperCase())))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String claimCode = objectMapper.readTree(credentials.getResponse().getContentAsString())
+                .get("claimCode").asText();
 
         MvcResult login = mockMvc.perform(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
-                                {"email":"%s","password":"secreto-123"}
-                                """.formatted(email)))
+                                {"email":"%s","password":"secreto-123","claimCode":"%s"}
+                                """.formatted(email, claimCode)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.tokenType").value("Bearer"))
                 .andExpect(jsonPath("$.userId").value(userId.toString()))

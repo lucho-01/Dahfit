@@ -92,7 +92,7 @@ public class RegisterCredentialsService implements RegisterCredentialsUseCase {
         }
 
         String code = newCode();
-        claimCodes.save(new ClaimCode(hash(code), ClaimCode.defaultExpiry(now, CLAIM_CODE_TTL_MINUTES)));
+        claimCodes.save(userId, new ClaimCode(hash(code), ClaimCode.defaultExpiry(now, CLAIM_CODE_TTL_MINUTES)));
         return new Result(userId, true, code);
     }
 

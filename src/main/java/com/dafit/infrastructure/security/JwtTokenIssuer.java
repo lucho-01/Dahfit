@@ -39,7 +39,7 @@ public class JwtTokenIssuer implements TokenIssuer {
     }
 
     @Override
-    public Optional<Token> issue(UUID userId, String email, Instant now) {
+    public Optional<TokenData> issue(UUID userId, String email, Instant now) {
         SecretKey key = key();
         Instant expiresAt = now.plus(ttl);
 
@@ -51,11 +51,11 @@ public class JwtTokenIssuer implements TokenIssuer {
                 .signWith(key)
                 .compact();
 
-        return Optional.of(new Token(value, userId, email, expiresAt));
+        return Optional.of(new TokenData(value, userId, email, expiresAt));
     }
 
     @Override
-    public Optional<Token> verify(String token) {
+    public Optional<TokenData> verify(String token) {
         if (token == null || token.isBlank()) {
             return Optional.empty();
         }
@@ -66,7 +66,7 @@ public class JwtTokenIssuer implements TokenIssuer {
                     .parseSignedClaims(token)
                     .getPayload();
 
-            return Optional.of(new Token(
+            return Optional.of(new TokenData(
                     token,
                     UUID.fromString(claims.getSubject()),
                     claims.get("email", String.class),

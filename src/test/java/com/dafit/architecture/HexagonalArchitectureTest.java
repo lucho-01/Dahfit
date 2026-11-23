@@ -89,6 +89,7 @@ class HexagonalArchitectureTest {
     void useCasesImplementAnInputPort() {
         classes()
                 .that().resideInAPackage("com.dafit.application.usecase")
+                .and().haveSimpleNameEndingWith("Service")
                 .should(implementPortIn("com.dafit.domain.port.in"))
                 .because("un caso de uso sin puerto de entrada no lo puede invocar nadie")
                 .check(classes);

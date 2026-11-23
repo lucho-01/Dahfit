@@ -10,7 +10,6 @@ import com.dafit.domain.port.out.StreakRepository;
 import com.dafit.domain.port.out.XpEventRepository;
 import java.util.List;
 import java.util.UUID;
-import java.time.Instant;
 
 /** Caso de uso: resumen de gamificacion para la pantalla de progreso. */
 public class GetGamificationService implements GetGamificationUseCase {
@@ -39,9 +38,7 @@ public class GetGamificationService implements GetGamificationUseCase {
         int totalXp = (int) xpEvents.totalPoints(userId);
         Streak streak = streaks.findByUserId(userId).orElseGet(() -> Streak.empty(userId));
 
-        List<UserBadge> userBadges = badges.findByUserId(userId).stream()
-                .map(badge -> new UserBadge(UUID.randomUUID(), userId, badge, Instant.now()))
-                .toList();
+        List<UserBadge> userBadges = badges.findByUserId(userId);
         return new Summary(
                 totalXp,
                 XpLevel.of(totalXp),

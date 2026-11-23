@@ -11,6 +11,7 @@ import com.dafit.domain.model.SetType;
 import com.dafit.domain.model.User;
 import com.dafit.domain.model.Workout;
 import com.dafit.domain.model.WorkoutSet;
+import com.dafit.domain.port.in.EvaluateUserUseCase;
 import com.dafit.domain.port.in.EvaluateExerciseUseCase;
 import com.dafit.domain.port.in.EvaluateGlobalUseCase;
 import com.dafit.domain.port.in.EvaluateMuscleUseCase;
@@ -45,7 +46,7 @@ import java.util.UUID;
  * calcula despues con {@code MuscleScoreCalculator}, que solo cuenta
  * evaluaciones oficiales.
  */
-public class EvaluateUserService {
+public class EvaluateUserService implements EvaluateUserUseCase {
 
     /** Sesiones recientes donde se busca la mejor serie de cada ejercicio. */
     static final int LOOKBACK_WORKOUTS = 120;
@@ -85,6 +86,7 @@ public class EvaluateUserService {
      *
      * @param refreshSets si {@code false} se usa el historial de evaluaciones tal cual
      */
+    @Override
     public MuscleStep evaluateMuscle(UUID actorId, UUID userId, MuscleGroup muscle,
                                      Instant assessedAt, boolean refreshSets) {
         authorization.checkSameUser(actorId, userId);
@@ -104,6 +106,7 @@ public class EvaluateUserService {
      *
      * @param refreshSets si {@code true} recalcula antes las series de todo el catalogo
      */
+    @Override
     public UserStep evaluateAll(UUID actorId, UUID userId, Instant assessedAt, boolean refreshSets) {
         authorization.checkSameUser(actorId, userId);
         User user = requireBenchmarkUser(userId);
@@ -194,22 +197,4 @@ public class EvaluateUserService {
         return best;
     }
 
-    /**
-     * Resultado del recalculo de un musculo.
-     *
-     * @param assessment   evaluacion del musculo persistida
-     * @param recalculated ejercicios reevaluados desde su historial
-     */
-    public record MuscleStep(MuscleAssessment assessment, List<UUID> recalculated) {
-        public MuscleStep {
-            recalculated = recalculated == null ? List.of() : List.copyOf(recalculated);
-        }
-    }
-
-    /** Resultado completo: los ocho musculos y el rango general. */
-    public record UserStep(Map<MuscleGroup, MuscleStep> muscles, GlobalAssessment global) {
-        public UserStep {
-            muscles = muscles == null ? Map.of() : Map.copyOf(muscles);
-        }
-    }
 }

@@ -55,9 +55,7 @@ public class EvaluateMuscleService implements EvaluateMuscleUseCase {
         authorization.checkSameUser(actorId, userId);
         Instant at = assessedAt == null ? Instant.now() : assessedAt;
 
-        List<ExerciseAssessment> evaluatedExercises = exerciseAssessments.findLatestForUser(userId)
-                .map(List::of)
-                .orElse(List.of());
+        List<ExerciseAssessment> evaluatedExercises = exerciseAssessments.findLatestForUser(userId);
 
         Map<UUID, BigDecimal> coefficientsForMuscle = coefficients.findApproved().stream()
                 .filter(MuscleCoefficient::isEffective)

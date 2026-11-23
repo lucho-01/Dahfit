@@ -36,12 +36,8 @@ public class GetAssessmentSummaryService implements GetAssessmentSummaryUseCase 
 
         // Cada repositorio devuelve ya solo la ultima evaluacion por ejercicio y
         // por musculo; el historico completo es detalle de auditoria, no de UI.
-        List<ExerciseAssessment> exercises = exerciseAssessments.findLatestForUser(userId)
-                .map(List::of)
-                .orElse(List.of());
-        List<MuscleAssessment> muscles = muscleAssessments.findLatestForUser(userId)
-                .map(List::of)
-                .orElse(List.of());
+        List<ExerciseAssessment> exercises = exerciseAssessments.findLatestForUser(userId);
+        List<MuscleAssessment> muscles = muscleAssessments.findLatestForUser(userId);
         GlobalAssessment global = globalAssessments.findLatestFor(userId).orElse(null);
 
         return new Summary(exercises, muscles, global);

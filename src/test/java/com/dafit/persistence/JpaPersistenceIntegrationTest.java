@@ -29,6 +29,10 @@ import com.dafit.domain.model.SetType;
 import com.dafit.domain.model.Sex;
 import com.dafit.domain.model.StrengthRank;
 import com.dafit.domain.model.Streak;
+import com.dafit.domain.model.SyncBatchHistory;
+import com.dafit.domain.model.SyncOutcome;
+import com.dafit.domain.model.SyncResult;
+import com.dafit.domain.model.SyncTarget;
 import com.dafit.domain.model.User;
 import com.dafit.domain.model.UserBadge;
 import com.dafit.domain.model.UserRole;
@@ -49,6 +53,7 @@ import com.dafit.domain.port.out.MuscleCoefficientRepository;
 import com.dafit.domain.port.out.PrimaryTestRepository;
 import com.dafit.domain.port.out.RoutineRepository;
 import com.dafit.domain.port.out.StreakRepository;
+import com.dafit.domain.port.out.SyncBatchRepository;
 import com.dafit.domain.port.out.UserRepository;
 import com.dafit.domain.port.out.WorkoutRepository;
 import com.dafit.domain.port.out.XpEventRepository;
@@ -87,7 +92,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  * <p>Cada prueba escribe, vacia la sesion de Hibernate y vuelve a leer: si el
  * dato solo estuviera en el contexto de persistencia, el test fallaria.
  */
-@SpringBootTest
+@SpringBootTest(properties = {
+        "spring.sql.init.mode=never",
+        "spring.flyway.enabled=false",
+        "spring.jpa.hibernate.ddl-auto=create-drop",
+        "dafit.database.verify-on-startup=true"
+})
 @ActiveProfiles("jpa")
 @Transactional
 class JpaPersistenceIntegrationTest {
@@ -133,6 +143,9 @@ class JpaPersistenceIntegrationTest {
 
     @Autowired
     private StreakRepository streaks;
+
+    @Autowired
+    private SyncBatchRepository syncBatches;
 
     @Autowired
     private BadgeRepository badges;
@@ -509,6 +522,44 @@ class JpaPersistenceIntegrationTest {
         assertThat(benchmarkTables.findFor(exerciseId, BenchmarkCategory.of(Sex.MALE), null)).isEmpty();
     }
 
+    @Test
+    void persistePercentilesDeBenchmarkConDosDecimales() {
+        UUID exerciseId = UUID.randomUUID();
+        insertExercise(exerciseId);
+        BenchmarkTable table = new BenchmarkTable(
+                UUID.randomUUID(), exerciseId, "ACSM", "v1",
+                BenchmarkCategory.of(Sex.MALE), null, true, false,
+                List.of(BenchmarkPoint.of(50.25, "90"), BenchmarkPoint.of(80.75, "130")));
+
+        benchmarkTables.save(table);
+        flushAndClear();
+
+        BenchmarkTable loaded = benchmarkTables.findById(table.id()).orElseThrow();
+
+        assertThat(loaded.points()).extracting(point -> point.percentile().value())
+                .containsExactly(new BigDecimal("50.25"), new BigDecimal("80.75"));
+    }
+
+    @Test
+    void persisteElHistorialDeLoteConElOrdenYResultadoPorElemento() {
+        UUID userId = UUID.randomUUID();
+        SyncBatchHistory history = new SyncBatchHistory(
+                UUID.randomUUID(), userId, T0,
+                List.of(
+                        SyncResult.applied("set-1", SyncTarget.WORKOUT_SET),
+                        SyncResult.rejected("finish-1", SyncTarget.WORKOUT_FINISH, "sesion invalida")));
+
+        syncBatches.save(history);
+        flushAndClear();
+
+        SyncBatchHistory loaded = syncBatches.findById(history.id()).orElseThrow();
+
+        assertThat(loaded.userId()).isEqualTo(userId);
+        assertThat(loaded.receivedAt()).isEqualTo(T0);
+        assertThat(loaded.results()).containsExactlyElementsOf(history.results());
+        assertThat(syncBatches.findByUserId(userId)).containsExactly(history);
+    }
+
     // --- rutinas -----------------------------------------------------------
 
     @Test
@@ -518,10 +569,16 @@ class JpaPersistenceIntegrationTest {
         insertUser(coachId);
         insertUser(athleteId);
 
+        UUID exerciseA = UUID.randomUUID();
+        UUID exerciseB = UUID.randomUUID();
+        UUID exerciseC = UUID.randomUUID();
+        insertExercise(exerciseA);
+        insertExercise(exerciseB);
+        insertExercise(exerciseC);
         UUID routineId = UUID.randomUUID();
         Routine routine = new Routine(routineId, coachId, athleteId, "Fuerza base",
-                List.of(routineExercise(UUID.randomUUID(), 3), routineExercise(UUID.randomUUID(), 1),
-                        routineExercise(UUID.randomUUID(), 2)),
+                List.of(routineExercise(exerciseA, 3), routineExercise(exerciseB, 1),
+                        routineExercise(exerciseC, 2)),
                 T0);
         routines.save(routine);
         flushAndClear();

@@ -1,10 +1,11 @@
-# Perfil de integracion JPA: valida los adaptadores reales de persistencia sin
-# depender de una base externa ni de Docker.
+# Perfil de integracion de persistencia: valida los adaptadores JDBC reales
+# contra el esquema (schema.sql/data.sql) sin depender de una base externa ni
+# de Docker.
 #
 # Diferencias deliberadas con produccion:
-#   * El esquema lo genera Hibernate (create-drop) en vez de Flyway. El DDL de
-#     PostgreSQL se valida aparte con `ddl-auto: validate` contra Neon; aqui lo
-#     que se ejercita es el mapeo entidad <-> dominio y las consultas derivadas.
+#   * El esquema lo crean schema.sql/data.sql en vez de Flyway, porque parte
+#     del DDL de PostgreSQL (indice parcial de workouts) no existe en H2. El
+#     DDL real de PostgreSQL se valida con Flyway al arrancar contra Neon.
 #   * H2 en modo PostgreSQL, para que los tipos y el SQL se parezcan.
 spring:
   datasource:
@@ -12,9 +13,9 @@ spring:
     username: sa
     password: ""
     driver-class-name: org.h2.Driver
-  jpa:
-    hibernate:
-      ddl-auto: create-drop
+  sql:
+    init:
+      mode: always
   flyway:
     enabled: false
 

@@ -111,7 +111,7 @@ public class AwardXpService implements AwardWorkoutXpUseCase {
                 new BadgeEvaluator.Stats(
                         (int) workouts.countCompleted(userId),
                         updated.longestDays()),
-                java.util.EnumSet.of(badges.badgesOf(userId)));
+                badges.badgesOf(userId));
 
         // 2. Escribir (cada guardado es su propia transaccion del adaptador;
         //    en produccion el caso de uso se declara @Transactional).
@@ -125,7 +125,7 @@ public class AwardXpService implements AwardWorkoutXpUseCase {
 
         List<Badge> earned = new ArrayList<>();
         for (Badge badge : newBadges) {
-            badges.save(badge);
+            badges.save(userId, badge);
             earned.add(badge);
         }
 

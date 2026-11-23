@@ -20,6 +20,7 @@ import com.dafit.domain.port.out.MuscleAssessmentRepository;
 import com.dafit.domain.port.out.MuscleCoefficientRepository;
 import com.dafit.domain.port.out.PrimaryTestRepository;
 import com.dafit.domain.port.out.RoutineRepository;
+import com.dafit.domain.port.out.SyncBatchRepository;
 import com.dafit.domain.port.out.UserRepository;
 import com.dafit.domain.port.out.WorkoutRepository;
 import org.junit.jupiter.api.Test;
@@ -36,14 +37,18 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Verifica que el hexagono se ensambla: contexto arriba y exactamente un
  * adaptador por puerto de salida.
  *
- * <p>Si alguien anade un adaptador JPA sin retirar el de memoria, este test
- * falla y obliga a decidir cual queda activo. Es deliberado: dos adaptadores
+ * <p>Si alguien anade un segundo adaptador para un puerto, este test falla y
+ * obliga a decidir cual queda activo. Es deliberado: dos adaptadores
  * del mismo puerto producen un error de Spring confuso en el arranque.
  *
- * <p>Corre con perfil {@code test} (H2 + adaptadores en memoria): los tests
+ * <p>Corre con perfil {@code test} (H2 + adaptadores JPA): los tests
  * nunca tocan la base real.
  */
-@SpringBootTest
+@SpringBootTest(properties = {
+        "spring.sql.init.mode=never",
+        "spring.flyway.enabled=false",
+        "spring.jpa.hibernate.ddl-auto=create-drop"
+})
 @ActiveProfiles("test")
 class DafitApplicationTests {
 
@@ -71,7 +76,8 @@ class DafitApplicationTests {
             MuscleAssessmentRepository.class,
             GlobalAssessmentRepository.class,
             WorkoutRepository.class,
-            RoutineRepository.class);
+            RoutineRepository.class,
+            SyncBatchRepository.class);
 
     @Autowired
     private ApplicationContext context;

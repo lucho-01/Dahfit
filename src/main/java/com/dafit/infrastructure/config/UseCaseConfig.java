@@ -28,6 +28,7 @@ import com.dafit.domain.port.in.CreateRoutineUseCase;
 import com.dafit.domain.port.in.EvaluateExerciseUseCase;
 import com.dafit.domain.port.in.EvaluateGlobalUseCase;
 import com.dafit.domain.port.in.EvaluateMuscleUseCase;
+import com.dafit.domain.port.in.EvaluateUserUseCase;
 import com.dafit.domain.port.in.GetAssessmentSummaryUseCase;
 import com.dafit.domain.port.in.GetBodyMetricHistoryUseCase;
 import com.dafit.domain.port.in.GetGamificationUseCase;
@@ -57,6 +58,7 @@ import com.dafit.domain.port.out.PasswordHasher;
 import com.dafit.domain.port.out.PrimaryTestRepository;
 import com.dafit.domain.port.out.RoutineRepository;
 import com.dafit.domain.port.out.StreakRepository;
+import com.dafit.domain.port.out.SyncBatchRepository;
 import com.dafit.domain.port.out.TokenIssuer;
 import com.dafit.domain.port.out.UserRepository;
 import com.dafit.domain.port.out.WorkoutRepository;
@@ -228,7 +230,7 @@ public class UseCaseConfig {
      * historial y compone musculo y global (R-15).
      */
     @Bean
-    public EvaluateUserService evaluateUserService(
+    public EvaluateUserUseCase evaluateUserService(
             EvaluateExerciseUseCase exerciseUseCase,
             EvaluateMuscleUseCase muscleUseCase,
             EvaluateGlobalUseCase globalUseCase,
@@ -337,9 +339,12 @@ public class UseCaseConfig {
             WorkoutRepository workouts,
             WorkoutSessionUseCase session,
             AwardWorkoutXpUseCase awardXp,
-            AuthorizationSupport authorization) {
+            AuthorizationSupport authorization,
+            SyncBatchRepository syncBatches,
+            Clock clock) {
 
-        return new SyncBatchService(workouts, session, awardXp, authorization);
+        return new SyncBatchService(
+                workouts, session, awardXp, authorization, syncBatches, clock);
     }
 
     // --- seguridad ----------------------------------------------------------
